@@ -364,20 +364,6 @@ class URDMEModel(Model):
         """ Initialize the species mapping to subdomains. The default
             is that a species is active in all the defined subdomains.
         """
-
-#        # If no subdomain function has been set by the user,
-#        # we need to create a default subdomain here.
-#        if len(self.subdomains) == 0:
-#            self._initialize_default_subdomain()
-#
-#        # The unique elements of the subdomain MeshFunctions
-#        sds = []
-#        for dim, subdomain in self.subdomains.items():
-#            sds = sds + list(numpy.unique(subdomain.array()).flatten())
-#        sds = numpy.unique(sds)
-#        sds = list(sds)
-#
-
         sds = list(numpy.unique(self.get_subdomain_vector()))
         # This conversion is necessary for UFL not to choke on the subdomain ids.
         for i, sd in enumerate(sds):
@@ -394,12 +380,9 @@ class URDMEModel(Model):
             if species not in self.species_to_subdomains.keys():
                 self.species_to_subdomains[species] = sds
 
-
     def restrict(self, species, subdomains):
         """ Restrict the diffusion of a species to a subdomain. """
         self.species_to_subdomains[species] = subdomains
-
-
 
     def set_subdomain_vector(self, sd):
         """ Explicitly set the subdomain vector from an array. """
@@ -1649,7 +1632,6 @@ class URDMEResult(dict):
         """ Dump the trajectory to a collection of vtk files in the folder folder_name (created if non-existant).
             The exported data is #molecules/volume, where the volume unit is implicit from the mesh dimension. """
 
-        #self._initialize_sol()
         subprocess.call(["mkdir", "-p", folder_name])
         fd = dolfin.File(os.path.join(folder_name, "trajectory.xdmf").encode('ascii', 'ignore'))
         func = dolfin.Function(self.model.mesh.get_function_space())
@@ -1669,7 +1651,6 @@ class URDMEResult(dict):
         if self.U is None:
             raise URDMEError("No solution found in the model.")
 
-        #outfile = open(filename,"w")
         dims = numpy.shape(self.U)
         Ndofs = dims[0]
         Mspecies = len(self.model.listOfSpecies)
